@@ -48,7 +48,7 @@ export class AppComponent implements OnInit {
         }, 1000 * 10);
     }
 
-    public updateChecked(event: MatCheckboxChange): void {
+    public updateChecked(event: any): void {
         console.log(event);
         this.checked = event.checked;
     }
