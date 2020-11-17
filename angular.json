@@ -33,6 +33,12 @@
             "styles": [
               "src/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "node_modules/",
+                "src"
+              ]
+            },
             "scripts": []
           },
           "configurations": {
@@ -96,6 +102,12 @@
             "styles": [
               "src/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "node_modules/",
+                "src"
+              ]
+            },
             "scripts": []
           }
         },
@@ -127,5 +139,8 @@
       }
     }
   },
-  "defaultProject": "moo-flashcard"
+  "defaultProject": "moo-flashcard",
+  "cli": {
+    "analytics": "2e0d0c1d-0c27-421c-a094-0e9dc1c272f9"
+  }
 }
