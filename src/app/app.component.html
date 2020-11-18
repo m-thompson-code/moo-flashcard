@@ -12,7 +12,11 @@
     <form [formGroup]="createTopicForm" (ngSubmit)="createTopic()">
         <mat-form-field class="block">
             <mat-label>New Topic</mat-label>
-            <input matInput formControlName="topic" required>
+            <textarea matInput formControlName="topic" required
+                cdkTextareaAutosize
+                #autosize="cdkTextareaAutosize"
+                cdkAutosizeMinRows="1"
+                cdkAutosizeMaxRows="5"></textarea>
         </mat-form-field>
     
         <mat-form-field class="block">

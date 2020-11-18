@@ -25,7 +25,11 @@
                 <form (ngSubmit)="update()" [formGroup]="updateForm" class="example-form">
                     <mat-form-field class="block">
                         <mat-label>Topic</mat-label>
-                        <input matInput formControlName="topic" required>
+                        <textarea matInput formControlName="topic" required
+                            cdkTextareaAutosize
+                            #autosize="cdkTextareaAutosize"
+                            cdkAutosizeMinRows="1"
+                            cdkAutosizeMaxRows="5"></textarea>
                     </mat-form-field>
                 
                     <mat-form-field class="block">
