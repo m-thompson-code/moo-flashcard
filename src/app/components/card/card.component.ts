@@ -30,6 +30,8 @@ export class CardComponent implements OnInit, OnDestroy {
 
     public showForm: boolean = false;
 
+    @Input() useVoice?: boolean;
+
     constructor(private fb: FormBuilder, private voiceService: VoiceService) { }
 
     public ngOnInit(): void {
@@ -67,9 +69,11 @@ export class CardComponent implements OnInit, OnDestroy {
             this.showForm = values.showForm;
         }));
 
-        setTimeout(() => {
-            this.speakTopic();
-        }, environment.globalDelay * 2);
+        if (this.useVoice) {
+            setTimeout(() => {
+                this.speakTopic();
+            }, environment.globalDelay * 2);
+        }
     }
 
     public next(): void {

@@ -4,6 +4,14 @@
     max-width: 1200px;
 }
 
+mat-expansion-panel {
+    margin-bottom: 24px;
+}
+
+.options {
+    margin-bottom: 48px;
+}
+
 mat-divider {
     margin: 24px 0;
 }
@@ -30,4 +38,20 @@ mat-divider {
     }
 
     margin-bottom: 12px;
+}
+
+mat-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+}
+
+mat-progress-bar {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
 }

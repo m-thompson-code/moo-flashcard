@@ -11,12 +11,12 @@
 
     <form [formGroup]="createTopicForm">
         <mat-form-field class="block">
-            <mat-label>New topic text</mat-label>
+            <mat-label>New Topic</mat-label>
             <input matInput formControlName="topic" required>
         </mat-form-field>
     
         <mat-form-field class="block">
-            <mat-label>Autosize textarea</mat-label>
+            <mat-label>Notes</mat-label>
             <textarea matInput formControlName="notes" 
                 cdkTextareaAutosize
                 #autosize="cdkTextareaAutosize"
@@ -31,27 +31,23 @@
     </form>
 </mat-expansion-panel>
 
-<!-- <mat-progress-bar mode="indeterminate"></mat-progress-bar> -->
-
-<mat-divider></mat-divider>
-
-<ng-container *ngIf="data.isPending">
-    <mat-spinner></mat-spinner>
-</ng-container>
+<div class="options">
+    <form [formGroup]="voiceForm">
+        <mat-slide-toggle formControlName="voice"
+        color="primary">Use text-to-voice</mat-slide-toggle>
+    </form>
+</div>
 
 <ng-container *ngIf="!data.isPending">
     <div *ngIf="!data.value.length">
-        <p>You don't have any topics</p>
+        <h1>You don't have any topics</h1>
     </div>
     
     <div *ngIf="data.value.length" class="cards">
-        <app-card *ngFor="let cardData of cardDatas" [topic]="cardData.topic" [notes]="cardData.notes" [translateIn]="cardData.translateIn"
+        <app-card *ngFor="let cardData of cardDatas" [topic]="cardData.topic" [notes]="cardData.notes" [translateIn]="cardData.translateIn" [useVoice]="useVoice"
         (nextClicked)="pushCard({from: 'left'})" (previousClicked)="pushCard({from: 'right'})"></app-card>
     </div>
 </ng-container>
 
-<!-- 
-<div class="ripple-test"
-     matRipple>
-  Click me
-</div> -->
+<mat-progress-bar mode="indeterminate" *ngIf="!data.isPending"></mat-progress-bar>
+<mat-spinner *ngIf="data.isPending"></mat-spinner>

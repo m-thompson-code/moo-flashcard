@@ -20,7 +20,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TextFieldModule } from '@angular/cdk/text-field';
-
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import firebase from 'firebase/app';
 
@@ -68,6 +68,7 @@ import { CardComponent } from './components/card/card.component';
         MatToolbarModule,
         MatTooltipModule,
         TextFieldModule,
+        MatSlideToggleModule,
     ],
     providers: [],
     bootstrap: [AppComponent]

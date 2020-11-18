@@ -9,6 +9,7 @@ import firebase from 'firebase/app';
 
 import { AppHeightService } from './services/app-height.service';
 import { environment } from 'src/environments/environment';
+import { VoiceService } from './services/voice.service';
 
 export interface TopicData {
     topic: string;
@@ -28,6 +29,7 @@ export class AppComponent implements OnInit {
     public checked: boolean = true;
 
     public createTopicForm!: FormGroup;
+    public voiceForm!: FormGroup;
 
     private _sub?: Subscription;
 
@@ -42,7 +44,10 @@ export class AppComponent implements OnInit {
 
     public index: number = 0;
 
-    constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, private appHeightService: AppHeightService, private renderer: Renderer2) {
+    public useVoice: boolean = true;
+
+    constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, private renderer: Renderer2, 
+        private appHeightService: AppHeightService, private voiceService: VoiceService) {
 
     }
 
@@ -62,19 +67,28 @@ export class AppComponent implements OnInit {
             }),
         });
 
-        this.data = {value: [
-            {
-                topic: 'topic 1',
-                notes: 'topic 1 notes',
-            },
-            {
-                topic: 'topic 2',
-                notes: 'topic 2 notes\nnewline text',
-            },
-            {
-                topic: 'topic 3',
-            },
-        ], isPending: false};
+        this.voiceForm = this.fb.group({
+            voice: new FormControl({
+                value: true,
+                disabled: false,
+            }),
+        });
+
+        this.data = {
+            value: [
+                {
+                    topic: 'topic 1',
+                    notes: 'topic 1 notes',
+                },
+                {
+                    topic: 'topic 2',
+                    notes: 'topic 2 notes\nnewline text',
+                },
+                {
+                    topic: 'topic 3',
+                },
+            ], isPending: false,
+        };
 
         this.cardDatas.push({
             topic: this.data.value[0].topic,
@@ -86,24 +100,16 @@ export class AppComponent implements OnInit {
             console.log(values);
         });
 
-        this.openSnackBar();
+        this._sub.add(this.voiceForm.valueChanges.subscribe((values: any) => {
+            console.log(values);
+            this.useVoice = values?.voice;
 
-        this.data = {
-            value: [
-                {
-                    topic: 'one',
-                    notes: 'notes on one',
-                },
-                {
-                    topic: 'two',
-                    notes: 'notes on two\nnewline test',
-                },
-                {
-                    topic: 'three',
-                },
-            ],
-            isPending: false,
-        };
+            if (!this.useVoice) {
+                this.voiceService.silence();
+            }
+        }));
+
+        this.openSnackBar();
     }
 
     public pushCard(options: {from: 'left' | 'right'}): void {
