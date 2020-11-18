@@ -58,6 +58,11 @@ mat-form-field.block, .mat-mdc-form-field.block {
     margin-bottom: 12px;
 }
 
+// Fix for white background showing even though we are using dark theme
+.mat-mdc-progress-bar .mdc-linear-progress__buffer-bar {
+    background-color: #303030;
+}
+
 .example-tooltip-red {
     background: red;
 }

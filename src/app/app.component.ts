@@ -9,6 +9,7 @@ import { AppHeightService } from './services/app-height.service';
 import { environment } from 'src/environments/environment';
 import { VoiceService } from './services/voice.service';
 import { DataService, TopicData } from './services/data.service';
+import { LoaderService } from './services/loader.service';
 
 export interface CardData extends TopicData {
     translateIn?: 'left' | 'right';
@@ -41,7 +42,8 @@ export class AppComponent implements OnInit {
     public useVoice: boolean = false;
 
     constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, private renderer: Renderer2, 
-        private appHeightService: AppHeightService, private voiceService: VoiceService, private dataService: DataService) {
+        private appHeightService: AppHeightService, private voiceService: VoiceService, 
+        private dataService: DataService, public loaderService: LoaderService) {
 
     }
 
@@ -83,15 +85,6 @@ export class AppComponent implements OnInit {
         this.openSnackBar();
 
         this._sub.add(this.dataService.getTopics().subscribe(topics => {
-            console.log(topics);
-
-            // const topicsMap: {
-            //     [id: string]: {
-            //         topic: TopicData;
-            //         found: boolean;
-            //     };
-            // } = {};
-
             this.data = {
                 value: topics,
                 isPending: false,
@@ -139,12 +132,6 @@ export class AppComponent implements OnInit {
         }, environment.globalDelay);
     }
 
-    public updateChecked(event: any): void {
-        const checkBoxEventChange = event as MatCheckboxChange;
-        console.log(checkBoxEventChange);
-        this.checked = checkBoxEventChange.checked;
-    }
-
     public openSnackBar() {
         this._snackBar.open('moo cow', undefined, {
             duration: 5000,
@@ -161,8 +148,14 @@ export class AppComponent implements OnInit {
         const topic: string = typeof this.createTopicForm.controls.topic.value === 'string' ? this.createTopicForm.controls.topic.value : '';
         const notes: string = typeof this.createTopicForm.controls.notes.value === 'string' ? this.createTopicForm.controls.notes.value : '';
 
+        this.loaderService.inc();
+
         return this.dataService.addTopic(topic, notes).then(() => {
             this.cancel();
+        }).catch(error => {
+            console.error(error);
+        }).then(() => {
+            this.loaderService.dec();
         });
     }
 

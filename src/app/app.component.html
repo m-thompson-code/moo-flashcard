@@ -49,6 +49,6 @@
     </div>
 </ng-container>
 
-<mat-progress-bar mode="indeterminate" *ngIf="!data.isPending"></mat-progress-bar>
+<mat-progress-bar mode="indeterminate" *ngIf="!data.isPending && loaderService.loaderCount > 0"></mat-progress-bar>
 
 <mat-spinner *ngIf="data.isPending"></mat-spinner>

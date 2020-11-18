@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { DataService } from 'src/app/services/data.service';
+import { LoaderService } from 'src/app/services/loader.service';
 import { environment } from 'src/environments/environment';
 
 import { VoiceService } from '../../services/voice.service';
@@ -34,7 +35,8 @@ export class CardComponent implements OnInit, OnDestroy {
 
     @Input() useVoice?: boolean;
 
-    constructor(private fb: FormBuilder, private voiceService: VoiceService, private dataService: DataService) { }
+    constructor(private fb: FormBuilder, private voiceService: VoiceService, 
+        private dataService: DataService, private loaderService: LoaderService) { }
 
     public ngOnInit(): void {
         this.newTopic = this.topic || '';
@@ -101,12 +103,18 @@ export class CardComponent implements OnInit, OnDestroy {
             return Promise.resolve();
         }
 
+        this.loaderService.inc();
+
         const topic: string = typeof this.updateForm.controls.topic.value === 'string' ? this.updateForm.controls.topic.value : '';
         const notes: string = typeof this.updateForm.controls.notes.value === 'string' ? this.updateForm.controls.notes.value : '';
 
         return this.dataService.updateTopic(this.topicID, topic, notes).then(() => {
             this.topic = topic;
             this.notes = notes;
+        }).catch(error => {
+            console.error(error);
+        }).then(() => {
+            this.loaderService.dec();
         });
     }
 
@@ -123,8 +131,14 @@ export class CardComponent implements OnInit, OnDestroy {
             return Promise.resolve();
         }
 
+        this.loaderService.inc();
+
         return this.dataService.deleteTopic(this.topicID).then(() => {
             this.next();
+        }).catch(error => {
+            console.error(error);
+        }).then(() => {
+            this.loaderService.dec();
         });
     }
 
