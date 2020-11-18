@@ -44,7 +44,7 @@ export class AppComponent implements OnInit {
 
     public index: number = 0;
 
-    public useVoice: boolean = true;
+    public useVoice: boolean = false;
 
     constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, private renderer: Renderer2, 
         private appHeightService: AppHeightService, private voiceService: VoiceService) {
@@ -69,7 +69,7 @@ export class AppComponent implements OnInit {
 
         this.voiceForm = this.fb.group({
             voice: new FormControl({
-                value: true,
+                value: this.useVoice,
                 disabled: false,
             }),
         });
