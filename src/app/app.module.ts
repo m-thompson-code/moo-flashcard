@@ -22,23 +22,27 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
-import firebase from 'firebase/app';
+import { AngularFireModule } from '@angular/fire';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { environment } from '../environments/environment';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyCyJMWOu6SInEhJfuJNfBP3CGYqLSDY52g",
-    authDomain: "moo-flashcard.firebaseapp.com",
-    databaseURL: "https://moo-flashcard.firebaseio.com",
-    projectId: "moo-flashcard",
-    storageBucket: "moo-flashcard.appspot.com",
-    messagingSenderId: "617891036670",
-    appId: "1:617891036670:web:dcf2f3a4493a4ecb5ad4af",
-    measurementId: "G-3N4JGNK7T7"
-};
+// import firebase from 'firebase/app';
 
-firebase.initializeApp(firebaseConfig);
+// const firebaseConfig = {
+//     apiKey: "AIzaSyCyJMWOu6SInEhJfuJNfBP3CGYqLSDY52g",
+//     authDomain: "moo-flashcard.firebaseapp.com",
+//     databaseURL: "https://moo-flashcard.firebaseio.com",
+//     projectId: "moo-flashcard",
+//     storageBucket: "moo-flashcard.appspot.com",
+//     messagingSenderId: "617891036670",
+//     appId: "1:617891036670:web:dcf2f3a4493a4ecb5ad4af",
+//     measurementId: "G-3N4JGNK7T7"
+// };
 
-import "firebase/auth";
-import "firebase/firestore";
+// firebase.initializeApp(firebaseConfig);
+
+// import "firebase/auth";
+// import "firebase/firestore";
 import { ReactiveFormsModule } from '@angular/forms';
 import { CardComponent } from './components/card/card.component';
 
@@ -52,6 +56,8 @@ import { CardComponent } from './components/card/card.component';
         AppRoutingModule,
         BrowserAnimationsModule,
         ReactiveFormsModule,
+        AngularFireModule.initializeApp(environment.firebase),
+        AngularFirestoreModule,
 
         MatButtonModule,
         MatCardModule,

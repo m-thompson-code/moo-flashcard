@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { DataService } from 'src/app/services/data.service';
 import { environment } from 'src/environments/environment';
 
 import { VoiceService } from '../../services/voice.service';
@@ -16,6 +17,7 @@ export class CardComponent implements OnInit, OnDestroy {
 
     @Input() topic?: string;
     @Input() notes?: string;
+    @Input() topicID?: string;
 
     newTopic?: string;
     newNotes?: string;
@@ -32,7 +34,7 @@ export class CardComponent implements OnInit, OnDestroy {
 
     @Input() useVoice?: boolean;
 
-    constructor(private fb: FormBuilder, private voiceService: VoiceService) { }
+    constructor(private fb: FormBuilder, private voiceService: VoiceService, private dataService: DataService) { }
 
     public ngOnInit(): void {
         this.newTopic = this.topic || '';
@@ -90,8 +92,22 @@ export class CardComponent implements OnInit, OnDestroy {
         this.previousClicked.emit();
     }
 
-    public save(): void {
-        console.log("save");
+    public update(): Promise<void> {
+        console.log("update");
+
+        if (!this.updateForm.valid || !this.topicID) {
+            console.warn("Nopes");
+            // TODO: snackbar
+            return Promise.resolve();
+        }
+
+        const topic: string = typeof this.updateForm.controls.topic.value === 'string' ? this.updateForm.controls.topic.value : '';
+        const notes: string = typeof this.updateForm.controls.notes.value === 'string' ? this.updateForm.controls.notes.value : '';
+
+        return this.dataService.updateTopic(this.topicID, topic, notes).then(() => {
+            this.topic = topic;
+            this.notes = notes;
+        });
     }
 
     public cancel(): void {
@@ -99,6 +115,17 @@ export class CardComponent implements OnInit, OnDestroy {
 
         this.updateForm.controls.topic.patchValue(this.topic);
         this.updateForm.controls.notes.patchValue(this.notes);
+        this.updateForm.controls.topic.setErrors(null);
+    }
+
+    public deleteTopic(): Promise<void> {
+        if (!confirm("Are you sure?") || !this.topicID) {
+            return Promise.resolve();
+        }
+
+        return this.dataService.deleteTopic(this.topicID).then(() => {
+            this.next();
+        });
     }
 
     public speakTopic(): void {

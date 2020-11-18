@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "moo-flashcard": {
+      "hosting": {
+        "moo-flashcard": [
+          "moo-flashcard"
+        ]
+      }
+    }
+  }
+}

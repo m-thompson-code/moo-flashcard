@@ -18,11 +18,11 @@
             </mat-expansion-panel-header>
 
             <ng-container *ngIf="!showForm">
-                <h1 class="notes">{{ notes }}</h1>
+                <h1 class="notes">{{ notes || '(none)' }}</h1>
             </ng-container>
 
             <ng-container *ngIf="showForm">
-                <form (ngSubmit)="save()" [formGroup]="updateForm" class="example-form">
+                <form (ngSubmit)="update()" [formGroup]="updateForm" class="example-form">
                     <mat-form-field class="block">
                         <mat-label>Topic</mat-label>
                         <input matInput formControlName="topic" required>
@@ -52,7 +52,7 @@
 
     <mat-card-actions>
         <button mat-button (click)="previous()">PREVIOUS</button>
-        <button mat-button color="warn">DELETE</button>
+        <button mat-button color="warn" (click)="deleteTopic()">DELETE</button>
         <button mat-button (click)="next()">NEXT</button>
     </mat-card-actions>
 </mat-card>

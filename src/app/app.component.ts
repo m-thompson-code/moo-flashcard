@@ -5,16 +5,10 @@ import { Subscription } from 'rxjs';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import firebase from 'firebase/app';
-
 import { AppHeightService } from './services/app-height.service';
 import { environment } from 'src/environments/environment';
 import { VoiceService } from './services/voice.service';
-
-export interface TopicData {
-    topic: string;
-    notes?: string;
-}
+import { DataService, TopicData } from './services/data.service';
 
 export interface CardData extends TopicData {
     translateIn?: 'left' | 'right';
@@ -47,15 +41,13 @@ export class AppComponent implements OnInit {
     public useVoice: boolean = false;
 
     constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, private renderer: Renderer2, 
-        private appHeightService: AppHeightService, private voiceService: VoiceService) {
+        private appHeightService: AppHeightService, private voiceService: VoiceService, private dataService: DataService) {
 
     }
 
     public ngOnInit(): void {
         this.appHeightService.init(this.renderer);
 
-        console.log(firebase);
-        
         this.createTopicForm = this.fb.group({
             topic: new FormControl({
                 value: '',
@@ -74,34 +66,13 @@ export class AppComponent implements OnInit {
             }),
         });
 
-        this.data = {
-            value: [
-                {
-                    topic: 'topic 1',
-                    notes: 'topic 1 notes',
-                },
-                {
-                    topic: 'topic 2',
-                    notes: 'topic 2 notes\nnewline text',
-                },
-                {
-                    topic: 'topic 3',
-                },
-            ], isPending: false,
-        };
-
-        this.cardDatas.push({
-            topic: this.data.value[0].topic,
-            notes: this.data.value[0].notes,
-            translateIn: 'left',
-        });
-
         this._sub = this.createTopicForm.valueChanges.subscribe((values: any) => {
-            console.log(values);
+            // console.log(values);
         });
 
         this._sub.add(this.voiceForm.valueChanges.subscribe((values: any) => {
-            console.log(values);
+            // console.log(values);
+
             this.useVoice = values?.voice;
 
             if (!this.useVoice) {
@@ -110,10 +81,30 @@ export class AppComponent implements OnInit {
         }));
 
         this.openSnackBar();
+
+        this._sub.add(this.dataService.getTopics().subscribe(topics => {
+            console.log(topics);
+
+            // const topicsMap: {
+            //     [id: string]: {
+            //         topic: TopicData;
+            //         found: boolean;
+            //     };
+            // } = {};
+
+            this.data = {
+                value: topics,
+                isPending: false,
+            };
+
+            if (!this.cardDatas.length) {
+                this.pushCard({from: 'left'});
+            }
+        }));
     }
 
     public pushCard(options: {from: 'left' | 'right'}): void {
-        if (!this.data) {
+        if (!this.data.value.length) {
             return;
         }
 
@@ -132,9 +123,11 @@ export class AppComponent implements OnInit {
         }
 
         this.cardDatas.push({
+            id: this.data.value[this.index].id,
             topic: this.data.value[this.index].topic,
             notes: this.data.value[this.index].notes,
             translateIn: options.from,
+            timestamp: this.data.value[this.index].timestamp,
         });
 
         this._trimCards();
@@ -158,11 +151,27 @@ export class AppComponent implements OnInit {
         });
     }
 
+    public createTopic(): Promise<void> {
+        if (!this.createTopicForm.valid) {
+            console.warn("Nopes");
+            // TODO: snackbar
+            return Promise.resolve();
+        }
+
+        const topic: string = typeof this.createTopicForm.controls.topic.value === 'string' ? this.createTopicForm.controls.topic.value : '';
+        const notes: string = typeof this.createTopicForm.controls.notes.value === 'string' ? this.createTopicForm.controls.notes.value : '';
+
+        return this.dataService.addTopic(topic, notes).then(() => {
+            this.cancel();
+        });
+    }
+
     public cancel(): void {
         console.log("cancel");
 
         this.createTopicForm.controls.topic.patchValue('');
         this.createTopicForm.controls.notes.patchValue('');
+        this.createTopicForm.controls.topic.setErrors(null);
     }
 
     public ngOnDestroy(): void {

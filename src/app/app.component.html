@@ -9,7 +9,7 @@
         </mat-panel-title>
     </mat-expansion-panel-header>
 
-    <form [formGroup]="createTopicForm">
+    <form [formGroup]="createTopicForm" (ngSubmit)="createTopic()">
         <mat-form-field class="block">
             <mat-label>New Topic</mat-label>
             <input matInput formControlName="topic" required>
@@ -44,10 +44,11 @@
     </div>
     
     <div *ngIf="data.value.length" class="cards">
-        <app-card *ngFor="let cardData of cardDatas" [topic]="cardData.topic" [notes]="cardData.notes" [translateIn]="cardData.translateIn" [useVoice]="useVoice"
+        <app-card *ngFor="let cardData of cardDatas" [topic]="cardData.topic" [notes]="cardData.notes" [topicID]="cardData.id" [translateIn]="cardData.translateIn" [useVoice]="useVoice"
         (nextClicked)="pushCard({from: 'left'})" (previousClicked)="pushCard({from: 'right'})"></app-card>
     </div>
 </ng-container>
 
 <mat-progress-bar mode="indeterminate" *ngIf="!data.isPending"></mat-progress-bar>
+
 <mat-spinner *ngIf="data.isPending"></mat-spinner>

@@ -135,6 +135,10 @@
               "devServerTarget": "moo-flashcard:serve:production"
             }
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {}
         }
       }
     }
