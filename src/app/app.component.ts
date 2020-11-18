@@ -91,6 +91,8 @@ export class AppComponent implements OnInit {
             };
 
             if (!this.cardDatas.length) {
+                this.index = this.data.value.length - 1;
+
                 this.pushCard({from: 'left'});
             }
         }));
@@ -171,6 +173,8 @@ export class AppComponent implements OnInit {
         this._shuffle(this.data.value);
 
         this.dataService.discardAllCards();
+
+        this.index = this.data.value.length - 1;
 
         this.pushCard({from: 'left'});
     }
