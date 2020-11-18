@@ -22,11 +22,11 @@ $moo-flashcard-warn: mat-palette($mat-red);
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
 $moo-flashcard-theme: mat-dark-theme((
-  color: (
-    primary: $moo-flashcard-primary,
-    accent: $moo-flashcard-accent,
-    warn: $moo-flashcard-warn,
-  )
+    color: (
+        primary: $moo-flashcard-primary,
+        accent: $moo-flashcard-accent,
+        warn: $moo-flashcard-warn,
+    )
 ));
 
 // Include theme styles for core and each component used in your app.
@@ -36,10 +36,23 @@ $moo-flashcard-theme: mat-dark-theme((
 @include angular-material-mdc-theme($moo-flashcard-theme);
 
 /* You can add global styles to this file, and also import other style files */
+:root {
+   --app-height-100: 100vh;
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
+
+    min-height: 100vh;
+    min-height: var(--app-height-100);
+
+    overflow-x: hidden;
+}
 
 .example-tooltip-red {
-  background: red;
+    background: red;
 }

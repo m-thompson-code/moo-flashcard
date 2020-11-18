@@ -1,0 +1,63 @@
+@keyframes animate-move-in-left {
+    from {left: 100vw;}
+    to {left: 0;}
+}
+
+@keyframes animate-move-in-right {
+    from {left: -100vw;}
+    to {left: 0;}
+}
+
+@keyframes animate-move-out-left {
+    from {left: 0;}
+    to {left: -100vw;}
+}
+
+@keyframes animate-move-out-right {
+    from {left: 0;}
+    to {left: 100vw;}
+}
+
+:host {
+    position: absolute;
+    top: 0;
+    left: 50%;
+
+    transform: translateX(-50%);
+}
+
+.card {
+    width: 90vw;
+    max-width: 1200px;
+
+    animation-duration: 2000ms;
+    animation-fill-mode: both;
+}
+
+.move-in-left {
+    animation-name: animate-move-in-left;
+}
+.move-in-right {
+    animation-name: animate-move-in-right;
+}
+
+.move-out-left {
+    animation-name: animate-move-out-left;
+}
+.move-out-right {
+    animation-name: animate-move-out-right;
+}
+
+mat-card-actions {
+    button {
+        margin-right: 12px;
+    }
+    button:last-child {
+        margin-left: auto;
+        margin-right: 0;
+    }
+}
+
+// .notes {
+
+// }

@@ -19,6 +19,8 @@ import { MatRippleModule } from '@angular/material-experimental/mdc-core';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TextFieldModule } from '@angular/cdk/text-field';
+
 
 import firebase from 'firebase/app';
 
@@ -38,10 +40,12 @@ firebase.initializeApp(firebaseConfig);
 import "firebase/auth";
 import "firebase/firestore";
 import { ReactiveFormsModule } from '@angular/forms';
+import { CardComponent } from './components/card/card.component';
 
 @NgModule({
     declarations: [
-       AppComponent
+       AppComponent,
+       CardComponent
     ],
     imports: [
         BrowserModule,
@@ -63,6 +67,7 @@ import { ReactiveFormsModule } from '@angular/forms';
         MatSnackBarModule,
         MatToolbarModule,
         MatTooltipModule,
+        TextFieldModule,
     ],
     providers: [],
     bootstrap: [AppComponent]
