@@ -32,7 +32,9 @@
 </mat-expansion-panel>
 
 <div class="options">
-    <form [formGroup]="voiceForm">
+    <form [formGroup]="voiceForm" class="form-buttons">
+        <button type="button" mat-raised-button color="primary" (click)="shuffle()">Shuffle topics</button>
+
         <mat-slide-toggle formControlName="voice"
         color="primary">Use text-to-voice</mat-slide-toggle>
     </form>

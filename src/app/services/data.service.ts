@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import firebase from 'firebase/app';
@@ -19,8 +19,17 @@ export interface TopicData extends RawTopicData {
     providedIn: 'root'
 })
 export class DataService {
+    public discardAllCardsObserver: Observable<void>;
+    private discardAllCardsSubject: Subject<void>;
 
-    constructor(private firestore: AngularFirestore) { }
+    constructor(private firestore: AngularFirestore) {
+        this.discardAllCardsSubject = new Subject<void>();
+        this.discardAllCardsObserver = this.discardAllCardsSubject.asObservable();
+    }
+
+    public discardAllCards(): void {
+        this.discardAllCardsSubject.next();
+    }
 
     public getTopics(): Observable<TopicData[]> {
         return this.firestore.collection<RawTopicData>('topics', ref => ref.orderBy('timestamp')).valueChanges({idField: 'id'}).pipe(map(collection => {

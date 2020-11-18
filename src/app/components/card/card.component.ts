@@ -73,6 +73,12 @@ export class CardComponent implements OnInit, OnDestroy {
             this.showForm = values.showForm;
         }));
 
+        this._sub.add(this.dataService.discardAllCardsObserver.subscribe(_ => {
+            this.voiceService.silence();
+
+            this.translateOut = 'left';
+        }));
+
         if (this.useVoice) {
             setTimeout(() => {
                 this.speakTopic();
