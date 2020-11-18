@@ -20,3 +20,14 @@ mat-divider {
     top: 0;
     left: 0;
 }
+
+.form-buttons {
+    button {
+        margin-right: 12px;
+    }
+    button:last-child {
+        margin-right: 0;
+    }
+
+    margin-bottom: 12px;
+}

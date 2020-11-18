@@ -30,8 +30,11 @@
     width: 90vw;
     max-width: 1200px;
 
-    animation-duration: 2000ms;
+    animation-duration: 400ms;
+    animation-timing-function: cubic-bezier(0.61, 0.01, 0.28, 1.05);
     animation-fill-mode: both;
+
+    margin-bottom: 48px;
 }
 
 .move-in-left {
@@ -48,6 +51,17 @@
     animation-name: animate-move-out-right;
 }
 
+.form-buttons {
+    button {
+        margin-right: 12px;
+    }
+    button:last-child {
+        margin-right: 0;
+    }
+
+    margin-bottom: 12px;
+}
+
 mat-card-actions {
     button {
         margin-right: 12px;
@@ -58,6 +72,6 @@ mat-card-actions {
     }
 }
 
-// .notes {
-
-// }
+.notes {
+    white-space: pre-wrap;
+}

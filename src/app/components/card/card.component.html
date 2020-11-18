@@ -6,11 +6,11 @@
     'move-out-right': translateOut === 'right'
 }">
     <mat-card-content>
-        <p>
+        <h1>
             The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from Japan.
             A small, agile dog that copes very well with mountainous terrain, the Shiba Inu was originally
             bred for hunting. {{ topic }}
-        </p>
+        </h1>
 
         <mat-expansion-panel>
             <mat-expansion-panel-header>
@@ -19,22 +19,35 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
 
-            <p class="notes">{{ notes }}</p>
+            <ng-container *ngIf="!showForm">
+                <h1 class="notes">{{ notes }}</h1>
+            </ng-container>
 
-            <form [formGroup]="updateForm" class="example-form">
-                <mat-form-field class="example-full-width">
-                    <mat-label>Update topic text</mat-label>
-                    <input matInput formControlName="topic" required>
-                </mat-form-field>
-            
-                <mat-form-field class="example-full-width">
-                    <mat-label>Update notes</mat-label>
-                    <textarea matInput formControlName="notes" 
-                        cdkTextareaAutosize
-                        #autosize="cdkTextareaAutosize"
-                        cdkAutosizeMinRows="1"
-                        cdkAutosizeMaxRows="5"></textarea>
-                </mat-form-field>
+            <ng-container *ngIf="showForm">
+                <form (ngSubmit)="save()" [formGroup]="updateForm" class="example-form">
+                    <mat-form-field class="block">
+                        <mat-label>Topic</mat-label>
+                        <input matInput formControlName="topic" required>
+                    </mat-form-field>
+                
+                    <mat-form-field class="block">
+                        <mat-label>Notes</mat-label>
+                        <textarea matInput formControlName="notes" 
+                            cdkTextareaAutosize
+                            #autosize="cdkTextareaAutosize"
+                            cdkAutosizeMinRows="1"
+                            cdkAutosizeMaxRows="5"></textarea>
+                    </mat-form-field>
+
+                    <div class="form-buttons">
+                        <button type="submit" mat-raised-button color="primary" [disabled]="!updateForm.valid">SAVE</button>
+                        <button type="button" mat-button (click)="cancel()">CANCEL</button>
+                    </div>
+                </form>
+            </ng-container>
+
+            <form [formGroup]="toggleUpdateForm">
+                <mat-checkbox formControlName="showForm">Show update form</mat-checkbox>
             </form>
         </mat-expansion-panel>
     </mat-card-content>

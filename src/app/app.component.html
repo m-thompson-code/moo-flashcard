@@ -10,12 +10,12 @@
     </mat-expansion-panel-header>
 
     <form [formGroup]="createTopicForm">
-        <mat-form-field class="example-full-width">
+        <mat-form-field class="block">
             <mat-label>New topic text</mat-label>
             <input matInput formControlName="topic" required>
         </mat-form-field>
     
-        <mat-form-field class="example-full-width">
+        <mat-form-field class="block">
             <mat-label>Autosize textarea</mat-label>
             <textarea matInput formControlName="notes" 
                 cdkTextareaAutosize
@@ -23,7 +23,12 @@
                 cdkAutosizeMinRows="1"
                 cdkAutosizeMaxRows="5"></textarea>
         </mat-form-field>
-    </form>    
+
+        <div class="form-buttons">
+            <button type="submit" mat-raised-button color="primary" [disabled]="!createTopicForm.valid">SAVE</button>
+            <button type="button" mat-button (click)="cancel()">CANCEL</button>
+        </div>
+    </form>
 </mat-expansion-panel>
 
 <!-- <mat-progress-bar mode="indeterminate"></mat-progress-bar> -->

@@ -13,7 +13,7 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$moo-flashcard-primary: mat-palette($mat-indigo);
+$moo-flashcard-primary: mat-palette($mat-indigo, 200);
 $moo-flashcard-accent: mat-palette($mat-pink, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
@@ -51,6 +51,11 @@ body {
     min-height: var(--app-height-100);
 
     overflow-x: hidden;
+}
+
+mat-form-field.block, .mat-mdc-form-field.block {
+    display: block;
+    margin-bottom: 12px;
 }
 
 .example-tooltip-red {

@@ -1,13 +1,14 @@
-import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, Renderer2 } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { MatAccordion } from '@angular/material/expansion';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import firebase from 'firebase/app';
-import { Subscription } from 'rxjs';
+
 import { AppHeightService } from './services/app-height.service';
+import { environment } from 'src/environments/environment';
 
 export interface TopicData {
     topic: string;
@@ -24,15 +25,11 @@ export interface CardData extends TopicData {
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-    // @ViewChild(MatAccordion) accordion!: MatAccordion;
-
     public checked: boolean = true;
 
     public createTopicForm!: FormGroup;
-    // public updateTopicForms!: FormGroup;
 
     private _sub?: Subscription;
-    private _sub2?: Subscription;
 
     public test: boolean = false;
 
@@ -42,7 +39,6 @@ export class AppComponent implements OnInit {
     } = { value: [], isPending: true };
 
     public cardDatas: CardData[] = [];
-    // public topicDatas: TopicData[] = [];
 
     public index: number = 0;
 
@@ -57,11 +53,11 @@ export class AppComponent implements OnInit {
         
         this.createTopicForm = this.fb.group({
             topic: new FormControl({
-                value: 'default topic value',
+                value: '',
                 disabled: false,
             }, Validators.required),
             notes: new FormControl({
-                value: 'default notes value',
+                value: '',
                 disabled: false,
             }),
         });
@@ -141,7 +137,7 @@ export class AppComponent implements OnInit {
     private _trimCards() {
         setTimeout(() => {
             this.cardDatas = [this.cardDatas[this.cardDatas.length - 1]];
-        }, 2000);
+        }, environment.globalDelay);
     }
 
     public updateChecked(event: any): void {
@@ -156,10 +152,16 @@ export class AppComponent implements OnInit {
         });
     }
 
+    public cancel(): void {
+        console.log("cancel");
+
+        this.createTopicForm.controls.topic.patchValue('');
+        this.createTopicForm.controls.notes.patchValue('');
+    }
+
     public ngOnDestroy(): void {
         this.appHeightService.detach();
         
         this._sub?.unsubscribe();
-        this._sub2?.unsubscribe();
     }
 }
