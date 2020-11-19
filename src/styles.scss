@@ -66,3 +66,18 @@ mat-form-field.block, .mat-mdc-form-field.block, div.block {
 .example-tooltip-red {
     background: red;
 }
+
+.normal-snack-bar, .mat-snack-bar-container {
+    background-color: #303030;
+    color: white;
+}
+
+.primary-snack-bar {
+    background-color: map-get($mat-indigo, 300);
+    color: white;
+}
+
+.warn-snack-bar {
+    background-color: map-get($mat-red, 500);
+    color: white;
+}

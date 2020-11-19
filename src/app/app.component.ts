@@ -44,7 +44,7 @@ export class AppComponent implements OnInit {
 
     public useVoice: boolean = false;
 
-    public showAllTopics: boolean = true;
+    public showAllTopics: boolean = false;
 
     constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, private renderer: Renderer2, 
         private appHeightService: AppHeightService, private voiceService: VoiceService, 
@@ -95,8 +95,6 @@ export class AppComponent implements OnInit {
                 this.handleReplacingCard();
             }
         }));
-
-        // this.openSnackBar();
 
         this._sub.add(this.dataService.getTopics().subscribe(topics => {
             const _topics = [];
@@ -210,16 +208,25 @@ export class AppComponent implements OnInit {
         }, environment.globalDelay);
     }
 
-    public openSnackBar() {
-        this._snackBar.open('moo cow', undefined, {
-            duration: 5000,
+    private _openSnackBar(text: string, color?: 'primary' | 'warn') {
+        // TODO: move to a service
+
+        let snackBarClass = "";
+
+        if (color === 'primary') {
+            snackBarClass = "primary-snack-bar";
+        } else if (color === 'warn') {
+            snackBarClass = "warn-snack-bar";
+        }
+
+        this._snackBar.open(text, undefined, {
+            duration: color === 'warn' ? 5000 : 2000,
+            panelClass: snackBarClass,
         });
     }
 
     public createTopic(): Promise<void> {
         if (!this.createTopicForm.valid) {
-            console.warn("Nopes");
-            // TODO: snackbar
             return Promise.resolve();
         }
 
@@ -230,16 +237,16 @@ export class AppComponent implements OnInit {
 
         return this.dataService.addTopic(topic, notes).then(() => {
             this.cancel();
+            this._openSnackBar('Topic created', 'primary');
         }).catch(error => {
             console.error(error);
+            this._openSnackBar(error?.message || 'Unknown error', 'warn');
         }).then(() => {
             this.loaderService.dec();
         });
     }
 
     public cancel(): void {
-        console.log("cancel");
-
         this.createTopicForm.controls.topic.patchValue('');
         this.createTopicForm.controls.notes.patchValue('');
         this.createTopicForm.controls.topic.setErrors(null);

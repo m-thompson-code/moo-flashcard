@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { DataService } from 'src/app/services/data.service';
 import { LoaderService } from 'src/app/services/loader.service';
@@ -23,10 +24,6 @@ export class CardComponent implements OnInit, OnDestroy {
     @Input() hidden?: boolean;
     @Input() hideNavigation?: boolean;
 
-
-    // newTopic?: string;
-    // newNotes?: string;
-
     @Input() public translateIn?: 'left' | 'right';
     public translateOut?: 'left' | 'right';
 
@@ -40,13 +37,10 @@ export class CardComponent implements OnInit, OnDestroy {
 
     @Input() useVoice?: boolean;
 
-    constructor(private fb: FormBuilder, private voiceService: VoiceService, 
+    constructor(private fb: FormBuilder, private voiceService: VoiceService, private _snackBar: MatSnackBar, 
         private dataService: DataService, private loaderService: LoaderService) { }
 
     public ngOnInit(): void {
-        // this.newTopic = this.topic || '';
-        // this.newNotes = this.notes || '';
-
         this.updateForm = this.fb.group({
             topic: new FormControl({
                 value: this.topic || '',
@@ -70,14 +64,14 @@ export class CardComponent implements OnInit, OnDestroy {
         });
 
         this._sub = this.updateForm.valueChanges.subscribe((values: any) => {
-            console.log(values);
+            // console.log(values);
 
             // this.newTopic = values.topic;
             // this.newNotes = values.notes;
         });
 
         this._sub.add(this.toggleUpdateForm.valueChanges.subscribe((values: any) => {
-            console.log(values);
+            // console.log(values);
 
             this.showForm = values.showForm;
         }));
@@ -117,11 +111,7 @@ export class CardComponent implements OnInit, OnDestroy {
     }
 
     public update(): Promise<void> {
-        console.log("update");
-
         if (!this.updateForm.valid || !this.topicID) {
-            console.warn("Nopes");
-            // TODO: snackbar
             return Promise.resolve();
         }
 
@@ -139,16 +129,18 @@ export class CardComponent implements OnInit, OnDestroy {
             if (this.hidden) {
                 this.handleReplacingCard();
             }
+
+            this._openSnackBar('Topic updated', 'primary');
         }).catch(error => {
             console.error(error);
+
+            this._openSnackBar(error?.message || 'Unknown error', 'warn');
         }).then(() => {
             this.loaderService.dec();
         });
     }
 
     public cancel(): void {
-        console.log("cancel");
-
         this.updateForm.controls.topic.patchValue(this.topic);
         this.updateForm.controls.notes.patchValue(this.notes);
         this.updateForm.controls.hidden.patchValue(this.hidden);
@@ -164,8 +156,12 @@ export class CardComponent implements OnInit, OnDestroy {
 
         return this.dataService.deleteTopic(this.topicID).then(() => {
             this.handleReplacingCard();
+
+            this._openSnackBar('Topic deleted', 'primary');
         }).catch(error => {
             console.error(error);
+
+            this._openSnackBar(error?.message || 'Unknown error', 'warn');
         }).then(() => {
             this.loaderService.dec();
         });
@@ -177,6 +173,23 @@ export class CardComponent implements OnInit, OnDestroy {
         }
 
         this.voiceService.speak(this.topic);
+    }
+
+    private _openSnackBar(text: string, color?: 'primary' | 'warn') {
+        // TODO: move to a service
+        
+        let snackBarClass = "";
+
+        if (color === 'primary') {
+            snackBarClass = "primary-snack-bar";
+        } else if (color === 'warn') {
+            snackBarClass = "warn-snack-bar";
+        }
+
+        this._snackBar.open(text, undefined, {
+            duration: color === 'warn' ? 5000 : 2000,
+            panelClass: snackBarClass,
+        });
     }
 
     public ngOnDestroy(): void {
