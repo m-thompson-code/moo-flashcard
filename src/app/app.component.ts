@@ -21,14 +21,17 @@ export interface CardData extends TopicData {
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-    public checked: boolean = true;
-
     public createTopicForm!: FormGroup;
     public voiceForm!: FormGroup;
 
     private _sub?: Subscription;
 
     public test: boolean = false;
+
+    public allData: {
+        value: TopicData[];
+        isPending: boolean;
+    } = { value: [], isPending: true };
 
     public data: {
         value: TopicData[];
@@ -40,6 +43,8 @@ export class AppComponent implements OnInit {
     public index: number = 0;
 
     public useVoice: boolean = false;
+
+    public showAllTopics: boolean = true;
 
     constructor(private fb: FormBuilder, private _snackBar: MatSnackBar, private renderer: Renderer2, 
         private appHeightService: AppHeightService, private voiceService: VoiceService, 
@@ -66,6 +71,10 @@ export class AppComponent implements OnInit {
                 value: this.useVoice,
                 disabled: false,
             }),
+            showAllTopics: new FormControl({
+                value: this.showAllTopics,
+                disabled: false,
+            }),
         });
 
         this._sub = this.createTopicForm.valueChanges.subscribe((values: any) => {
@@ -75,18 +84,78 @@ export class AppComponent implements OnInit {
         this._sub.add(this.voiceForm.valueChanges.subscribe((values: any) => {
             // console.log(values);
 
-            this.useVoice = values?.voice;
+            this.useVoice = !!values.voice;
+            this.showAllTopics = !!values.showAllTopics;
 
             if (!this.useVoice) {
                 this.voiceService.silence();
             }
+
+            if (this.showAllTopics) {
+                this.handleReplacingCard();
+            }
         }));
 
-        this.openSnackBar();
+        // this.openSnackBar();
 
         this._sub.add(this.dataService.getTopics().subscribe(topics => {
+            const _topics = [];
+
+            const topicMap: {
+                [topicID: string]: {
+                    topic: TopicData;
+                    found: boolean;
+                };
+            } = {};
+
+            for (const existingTopic of this.allData.value) {
+                topicMap[existingTopic.id] = {
+                    topic: existingTopic,
+                    found: false,
+                };
+            }
+
+            // Keep a list of new topics
+            const newTopics: TopicData[] = [];
+
+            for (const topic of topics) {
+                const topicMapEntree = topicMap[topic.id];
+
+                // Update map if topic is found in new topic array and update topic reference to latest version
+                if (topicMapEntree) {
+                    topicMapEntree.found = true;
+                    topicMapEntree.topic = topic;
+
+                    continue;
+                }
+
+                // If a new topic wasn't in topic map, populate newTopics (will be used later to add to allData.value)
+                newTopics.push(topic);
+            }
+
+            for (let i = 0; i < this.allData.value.length; i++) {
+                const previousTopic = this.allData.value[i];
+
+                const topicMapEntree = topicMap[previousTopic.id];
+
+                // this.allData.value[i] = topicMapEntree.topic;
+                Object.assign(previousTopic, topicMapEntree.topic);
+
+                // If for some reason this topic is no longer defined or if this topic wasn't found in the latest list of topics, remove this topic
+                if (!topicMapEntree.topic || !topicMapEntree.found) {
+                    this.allData.value.splice(i, 1);
+                    i -= 1;
+                    continue;
+                }
+            }
+
+            // Add all the new topics
+            this.allData.value.push(...newTopics);
+
+            this.allData.isPending = false;
+
             this.data = {
-                value: topics,
+                value: topics.filter(topic => !topic.hidden),
                 isPending: false,
             };
 
@@ -96,6 +165,12 @@ export class AppComponent implements OnInit {
                 this.pushCard({from: 'left'});
             }
         }));
+    }
+
+    public handleReplacingCard() {
+        this.index -= 1;
+
+        this.pushCard({from: 'left'});
     }
 
     public pushCard(options: {from: 'left' | 'right'}): void {
@@ -123,6 +198,7 @@ export class AppComponent implements OnInit {
             notes: this.data.value[this.index].notes,
             translateIn: options.from,
             timestamp: this.data.value[this.index].timestamp,
+            hidden: this.data.value[this.index].hidden,
         });
 
         this._trimCards();

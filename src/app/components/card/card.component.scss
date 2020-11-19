@@ -26,6 +26,16 @@
     transform: translateX(-50%);
 }
 
+:host.in-list {
+    position: static;
+   
+    transform: translateX(0);
+
+    .card {
+        animation-name: none;
+    }
+}
+
 .card {
     width: 90vw;
     max-width: 1200px;

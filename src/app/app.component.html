@@ -41,22 +41,47 @@
 
         <mat-slide-toggle formControlName="voice"
         color="primary">Use text-to-voice</mat-slide-toggle>
+
+        <mat-slide-toggle formControlName="showAllTopics"
+        color="primary">Show all topics</mat-slide-toggle>
     </form>
 </div>
 
 <ng-container *ngIf="!data.isPending">
-    <div *ngIf="!data.value.length">
-        <h1>You don't have any topics</h1>
-    </div>
     
-    <h1 class="index">
-        {{ index + 1 }} / {{ data.value.length }}
-    </h1>
+    
+    <ng-container *ngIf="showAllTopics">
+        <div *ngIf="!allData.value.length">
+            <h1>You don't have any topics</h1>
+        </div>
 
-    <div *ngIf="data.value.length" class="cards">
-        <app-card *ngFor="let cardData of cardDatas" [topic]="cardData.topic" [notes]="cardData.notes" [topicID]="cardData.id" [translateIn]="cardData.translateIn" [useVoice]="useVoice"
-        (nextClicked)="pushCard({from: 'left'})" (previousClicked)="pushCard({from: 'right'})"></app-card>
-    </div>
+        <ng-container *ngIf="allData.value.length">
+            <div class="cards">
+                <app-card *ngFor="let topicData of allData.value; let i = index" class="in-list" [prefix]="(i + 1) + ' / ' + allData.value.length + ' - '" [hideNavigation]="true"
+                [topic]="topicData.topic" [notes]="topicData.notes" [topicID]="topicData.id" [hidden]="topicData.hidden" [translateIn]="'left'" [useVoice]="false"></app-card>
+            </div>
+        </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="!showAllTopics">
+        <div *ngIf="!data.value.length">
+            <h1>You don't have any topics (not hidden)</h1>
+        </div>
+
+        <ng-container *ngIf="data.value.length">
+            <h1 class="index">
+                {{ index + 1 }} / {{ data.value.length }}
+            </h1>
+        
+            <div class="cards">
+                <app-card *ngFor="let cardData of cardDatas" 
+                [topic]="cardData.topic" [notes]="cardData.notes" [topicID]="cardData.id" [hidden]="cardData.hidden" [translateIn]="cardData.translateIn" [useVoice]="useVoice"
+                (nextClicked)="pushCard({from: 'left'})" (previousClicked)="pushCard({from: 'right'})" (replaceMe)="handleReplacingCard()"></app-card>
+            </div>
+        </ng-container>
+    </ng-container>
+    
+    
 </ng-container>
 
 <mat-progress-bar mode="indeterminate" *ngIf="!data.isPending && loaderService.loaderCount > 0"></mat-progress-bar>

@@ -9,6 +9,7 @@ export interface RawTopicData {
     topic: string;
     notes?: string;
     timestamp: firebase.firestore.FieldValue;
+    hidden: boolean;
 }
 
 export interface TopicData extends RawTopicData {
@@ -36,12 +37,12 @@ export class DataService {
             const topics: TopicData[] = [];
 
             for (const doc of collection) {
-                console.log(doc);
                 topics.push({
                     id: doc.id,
                     topic: doc.topic || '',
                     notes: doc.notes || '',
                     timestamp: doc.timestamp,
+                    hidden: !!doc.hidden,
                 });
             }
 
@@ -54,19 +55,21 @@ export class DataService {
             topic: topic,
             notes: notes,
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            hidden: false,
         }).then(() => {
-            console.log("did it");
+            console.log("Add topic successful");
         }).catch(error => {
             console.error(error);
         });
     }
     
-    public updateTopic(topicID: string, topic: string, notes: string): Promise<void> {
+    public updateTopic(topicID: string, topic: string, notes: string, hidden: boolean): Promise<void> {
         return this.firestore.collection<RawTopicData>('topics').doc(topicID).update({
             topic: topic || '',
             notes: notes || '',
+            hidden: hidden || false,
         }).then(() => {
-            console.log("did it");
+            console.log("Update topic successful");
         }).catch(error => {
             console.error(error);
         });
@@ -74,7 +77,7 @@ export class DataService {
     
     public deleteTopic(topicID: string): Promise<void> {
         return this.firestore.collection<RawTopicData>('topics').doc(topicID).delete().then(() => {
-            console.log("did it");
+            console.log("Delete topic successful");
         }).catch(error => {
             console.error(error);
         });

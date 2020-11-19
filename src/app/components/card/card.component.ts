@@ -16,12 +16,16 @@ export class CardComponent implements OnInit, OnDestroy {
     public updateForm!: FormGroup;
     public toggleUpdateForm!: FormGroup;
 
+    @Input() prefix?: string;
     @Input() topic?: string;
     @Input() notes?: string;
     @Input() topicID?: string;
+    @Input() hidden?: boolean;
+    @Input() hideNavigation?: boolean;
 
-    newTopic?: string;
-    newNotes?: string;
+
+    // newTopic?: string;
+    // newNotes?: string;
 
     @Input() public translateIn?: 'left' | 'right';
     public translateOut?: 'left' | 'right';
@@ -30,6 +34,7 @@ export class CardComponent implements OnInit, OnDestroy {
 
     @Output() public nextClicked: EventEmitter<void> = new EventEmitter();
     @Output() public previousClicked: EventEmitter<void> = new EventEmitter();
+    @Output() public replaceMe: EventEmitter<void> = new EventEmitter();
 
     public showForm: boolean = false;
 
@@ -39,8 +44,8 @@ export class CardComponent implements OnInit, OnDestroy {
         private dataService: DataService, private loaderService: LoaderService) { }
 
     public ngOnInit(): void {
-        this.newTopic = this.topic || '';
-        this.newNotes = this.notes || '';
+        // this.newTopic = this.topic || '';
+        // this.newNotes = this.notes || '';
 
         this.updateForm = this.fb.group({
             topic: new FormControl({
@@ -49,6 +54,10 @@ export class CardComponent implements OnInit, OnDestroy {
             }, Validators.required),
             notes: new FormControl({
                 value: this.notes || '',
+                disabled: false,
+            }),
+            hidden: new FormControl({
+                value: this.hidden || false,
                 disabled: false,
             }),
         });
@@ -63,8 +72,8 @@ export class CardComponent implements OnInit, OnDestroy {
         this._sub = this.updateForm.valueChanges.subscribe((values: any) => {
             console.log(values);
 
-            this.newTopic = values.topic;
-            this.newNotes = values.notes;
+            // this.newTopic = values.topic;
+            // this.newNotes = values.notes;
         });
 
         this._sub.add(this.toggleUpdateForm.valueChanges.subscribe((values: any) => {
@@ -92,6 +101,13 @@ export class CardComponent implements OnInit, OnDestroy {
         this.translateOut = 'left';
         this.nextClicked.emit();
     }
+
+    public handleReplacingCard(): void {
+        this.voiceService.silence();
+        this.translateOut = 'left';
+
+        this.replaceMe.emit();
+    }
     
     public previous(): void {
         this.voiceService.silence();
@@ -113,10 +129,16 @@ export class CardComponent implements OnInit, OnDestroy {
 
         const topic: string = typeof this.updateForm.controls.topic.value === 'string' ? this.updateForm.controls.topic.value : '';
         const notes: string = typeof this.updateForm.controls.notes.value === 'string' ? this.updateForm.controls.notes.value : '';
+        const hidden: boolean = !!this.updateForm.controls.hidden.value;
 
-        return this.dataService.updateTopic(this.topicID, topic, notes).then(() => {
+        return this.dataService.updateTopic(this.topicID, topic, notes, hidden).then(() => {
             this.topic = topic;
             this.notes = notes;
+            this.hidden = hidden;
+
+            if (this.hidden) {
+                this.handleReplacingCard();
+            }
         }).catch(error => {
             console.error(error);
         }).then(() => {
@@ -129,6 +151,7 @@ export class CardComponent implements OnInit, OnDestroy {
 
         this.updateForm.controls.topic.patchValue(this.topic);
         this.updateForm.controls.notes.patchValue(this.notes);
+        this.updateForm.controls.hidden.patchValue(this.hidden);
         this.updateForm.controls.topic.setErrors(null);
     }
 
@@ -140,7 +163,7 @@ export class CardComponent implements OnInit, OnDestroy {
         this.loaderService.inc();
 
         return this.dataService.deleteTopic(this.topicID).then(() => {
-            this.next();
+            this.handleReplacingCard();
         }).catch(error => {
             console.error(error);
         }).then(() => {

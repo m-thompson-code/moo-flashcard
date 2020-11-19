@@ -7,7 +7,7 @@
 }">
     <mat-card-content>
         <h1>
-            {{ topic }}
+            {{ prefix || '' }}{{ topic }}{{ hidden ? ' (Hidden)' : '' }}
         </h1>
 
         <mat-expansion-panel>
@@ -17,36 +17,36 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
 
-            <ng-container *ngIf="!showForm">
-                <h1 class="notes">{{ notes || '(none)' }}</h1>
-            </ng-container>
+            <h1 *ngIf="!showForm" class="notes">{{ notes || '(none)' }}</h1>
 
-            <ng-container *ngIf="showForm">
-                <form (ngSubmit)="update()" [formGroup]="updateForm" class="example-form">
-                    <mat-form-field class="block">
-                        <mat-label>Topic</mat-label>
-                        <textarea matInput formControlName="topic" required
-                            cdkTextareaAutosize
-                            #autosize="cdkTextareaAutosize"
-                            cdkAutosizeMinRows="1"
-                            cdkAutosizeMaxRows="5"></textarea>
-                    </mat-form-field>
-                
-                    <mat-form-field class="block">
-                        <mat-label>Notes</mat-label>
-                        <textarea matInput formControlName="notes" 
-                            cdkTextareaAutosize
-                            #autosize="cdkTextareaAutosize"
-                            cdkAutosizeMinRows="1"
-                            cdkAutosizeMaxRows="5"></textarea>
-                    </mat-form-field>
+            <form *ngIf="showForm" (ngSubmit)="update()" [formGroup]="updateForm" class="example-form">
+                <mat-form-field class="block">
+                    <mat-label>Topic</mat-label>
+                    <textarea matInput formControlName="topic" required
+                        cdkTextareaAutosize
+                        #autosize="cdkTextareaAutosize"
+                        cdkAutosizeMinRows="1"
+                        cdkAutosizeMaxRows="5"></textarea>
+                </mat-form-field>
+            
+                <mat-form-field class="block">
+                    <mat-label>Notes</mat-label>
+                    <textarea matInput formControlName="notes" 
+                        cdkTextareaAutosize
+                        #autosize="cdkTextareaAutosize"
+                        cdkAutosizeMinRows="1"
+                        cdkAutosizeMaxRows="5"></textarea>
+                </mat-form-field>
 
-                    <div class="form-buttons">
-                        <button type="submit" mat-raised-button color="primary" [disabled]="!updateForm.valid">SAVE</button>
-                        <button type="button" mat-button (click)="cancel()">CANCEL</button>
-                    </div>
-                </form>
-            </ng-container>
+                <div class="block">
+                    <mat-checkbox formControlName="hidden" color="warn">Hide topic</mat-checkbox>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="submit" mat-raised-button color="primary" [disabled]="!updateForm.valid">SAVE</button>
+                    <button type="button" mat-button (click)="cancel()">CANCEL</button>
+                </div>
+            </form>
 
             <form [formGroup]="toggleUpdateForm">
                 <mat-checkbox formControlName="showForm">Show update form</mat-checkbox>
@@ -55,8 +55,8 @@
     </mat-card-content>
 
     <mat-card-actions>
-        <button mat-button (click)="previous()">PREVIOUS</button>
+        <button *ngIf="!hideNavigation" mat-button (click)="previous()">PREVIOUS</button>
         <button mat-button color="warn" (click)="deleteTopic()">DELETE</button>
-        <button mat-button (click)="next()">NEXT</button>
+        <button *ngIf="!hideNavigation" mat-button (click)="next()">NEXT</button>
     </mat-card-actions>
 </mat-card>
